@@ -34,5 +34,5 @@ after_success:
   - docker push pearlicia/udagram-api-feed:v1
   - docker push pearlicia/udagram-api-user:v1
   - docker push pearlicia/udagram-frontend:v1
-  - docker push pearlicia/reverseproxy:v1
+  - docker push pearlicia/udagram-reverseproxy:v1
   
