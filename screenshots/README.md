@@ -23,3 +23,8 @@ kubectl describe hpa
 ```bash
 kubectl logs {pod_name}
 ```
+
+aws eks update-kubeconfig \
+    --region us-east-1 \
+    --name udagramcluster \
+    --role-arn arn:aws:iam::411483630432:role/newudagramclusterrole
