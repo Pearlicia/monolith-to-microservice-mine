@@ -1,0 +1,56 @@
+version: 2.1
+
+jobs:
+  lint-app:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+  build-docker:
+    machine: true
+    steps:
+      - checkout
+      - run:
+          name: Build docker images for each microservices
+          command: |
+            echo "--------- Installing dependencies-----------"
+            sudo curl -LO https://nodejs.org/dist/v18.0.0/node-v18.0.0-linux-x64.tar.xz
+            sudo tar -xvf node-v18.0.0-linux-x64.tar.xz
+            sudo cp -r node-v18.0.0-linux-x64/{bin,include,lib,share} /usr/
+            node --version => v18.0.0
+            sudo apt install nodejs
+
+            echo "--------- Building Images ------------"
+
+            docker build -t udagram-api-feed ./udagram-api-feed
+            docker tag udagram-api-feed pearlicia/udagram-api-feed:v2
+
+            docker build -t udagram-api-user ./udagram-api-user
+            docker tag udagram-api-user pearlicia/udagram-api-user:v2
+            
+            docker build -t udagram-frontend ./udagram-frontend
+            docker tag udagram-frontend pearlicia/udagram-frontend:v2
+
+            docker build -t udagram-reverseproxy ./udagram-reverseproxy
+            docker tag udagram-reverseproxy pearlicia/udagram-reverseproxy:v2
+
+            echo "-------- All images succesfully built----------"
+
+            echo " ------- login in to dockerhub--------"
+
+            docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+
+            echo "-------------- Push all images to dockerhub-------"
+
+            docker push pearlicia/udagram-api-feed:v2
+            docker push pearlicia/udagram-api-user:v2
+            docker push pearlicia/udagram-frontend:v2
+            docker push pearlicia/udagram-reverseproxy:v2
+
+workflows:
+  default:
+    jobs:
+      - lint-app
+      - build-docker:
+          requires: [lint-app]
+
