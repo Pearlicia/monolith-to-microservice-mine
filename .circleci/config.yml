@@ -36,7 +36,7 @@ jobs:
 
             echo "-------- All images succesfully built----------"
 
-            echo " ------- login in to dockerhub--------"
+            echo " ------- login to dockerhub--------"
 
             docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
