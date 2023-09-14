@@ -6,22 +6,25 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "SHA256:egfROIFK6jLx9kDvL5uWa6iaRqW6knAIf+OHMD9tDmI"
+
   build-docker:
-    machine: true
+    docker:
+      - image: circleci/node:13.8.0  # Use the desired Docker image for your build
     steps:
       - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - "SHA256:egfROIFK6jLx9kDvL5uWa6iaRqW6knAIf+OHMD9tDmI"
       - run:
           name: Build docker images for each microservices
           command: |
-            echo "--------- Installing dependencies-----------"
-            sudo curl -LO https://nodejs.org/dist/v18.0.0/node-v18.0.0-linux-x64.tar.xz
-            sudo tar -xvf node-v18.0.0-linux-x64.tar.xz
-            sudo cp -r node-v18.0.0-linux-x64/{bin,include,lib,share} /usr/
-            node --version => v18.0.0
-            sudo apt install nodejs
-
+            echo "--------- Installing dependencies -----------"
+            # Add your dependency installation steps here if needed
+            
             echo "--------- Building Images ------------"
-
             docker build -t udagram-api-feed ./udagram-api-feed
             docker tag udagram-api-feed pearlicia/udagram-api-feed:v2
 
@@ -34,14 +37,12 @@ jobs:
             docker build -t udagram-reverseproxy ./udagram-reverseproxy
             docker tag udagram-reverseproxy pearlicia/udagram-reverseproxy:v2
 
-            echo "-------- All images succesfully built----------"
+            echo "-------- All images successfully built ----------"
 
-            echo " ------- login to dockerhub--------"
-
+            echo " ------- login to Docker Hub --------"
             docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
-            echo "-------------- Push all images to dockerhub-------"
-
+            echo "-------------- Push all images to Docker Hub -------"
             docker push pearlicia/udagram-api-feed:v2
             docker push pearlicia/udagram-api-user:v2
             docker push pearlicia/udagram-frontend:v2
@@ -53,4 +54,3 @@ workflows:
       - lint-app
       - build-docker:
           requires: [lint-app]
-

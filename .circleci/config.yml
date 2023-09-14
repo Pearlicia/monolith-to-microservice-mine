@@ -9,10 +9,8 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - "SHA256:egfROIFK6jLx9kDvL5uWa6iaRqW6knAIf+OHMD9tDmI"
-
   build-docker:
-    docker:
-      - image: circleci/node:13.8.0  # Use the desired Docker image for your build
+    machine: true
     steps:
       - checkout
       - add_ssh_keys:
@@ -21,10 +19,15 @@ jobs:
       - run:
           name: Build docker images for each microservices
           command: |
-            echo "--------- Installing dependencies -----------"
-            # Add your dependency installation steps here if needed
-            
+            echo "--------- Installing dependencies-----------"
+            sudo curl -LO https://nodejs.org/dist/v18.0.0/node-v18.0.0-linux-x64.tar.xz
+            sudo tar -xvf node-v18.0.0-linux-x64.tar.xz
+            sudo cp -r node-v18.0.0-linux-x64/{bin,include,lib,share} /usr/
+            node --version => v18.0.0
+            sudo apt install nodejs
+
             echo "--------- Building Images ------------"
+
             docker build -t udagram-api-feed ./udagram-api-feed
             docker tag udagram-api-feed pearlicia/udagram-api-feed:v2
 
@@ -37,12 +40,14 @@ jobs:
             docker build -t udagram-reverseproxy ./udagram-reverseproxy
             docker tag udagram-reverseproxy pearlicia/udagram-reverseproxy:v2
 
-            echo "-------- All images successfully built ----------"
+            echo "-------- All images succesfully built----------"
 
-            echo " ------- login to Docker Hub --------"
+            echo " ------- login to dockerhub--------"
+
             docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
-            echo "-------------- Push all images to Docker Hub -------"
+            echo "-------------- Push all images to dockerhub-------"
+
             docker push pearlicia/udagram-api-feed:v2
             docker push pearlicia/udagram-api-user:v2
             docker push pearlicia/udagram-frontend:v2
@@ -54,3 +59,4 @@ workflows:
       - lint-app
       - build-docker:
           requires: [lint-app]
+
