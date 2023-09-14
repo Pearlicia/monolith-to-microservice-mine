@@ -15,8 +15,6 @@ jobs:
       - image: circleci/node:13.8.0  # Use the desired Docker image for your build
     steps:
       - checkout
-      - setup_remote_docker:  # This step allows you to use Docker inside a Docker container
-          version: 20.10.5  # Choose a Docker version compatible with your setup (adjust as needed)
       - add_ssh_keys:
           fingerprints:
             - "SHA256:egfROIFK6jLx9kDvL5uWa6iaRqW6knAIf+OHMD9tDmI"
