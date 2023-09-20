@@ -47,7 +47,9 @@ jobs:
 
       - run:
           name: Check linting errors
-          command: npx eslint . --quiet || exit 1  # Exit with an error if linting fails
+          command: npx eslint . --quiet
+
+          # command: npx eslint . --quiet || exit 1  # Exit with an error if linting fails
 
       - add_ssh_keys:
           fingerprints:
