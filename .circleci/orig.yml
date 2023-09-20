@@ -4,43 +4,17 @@ jobs:
   linting:
     docker:
       - image: cimg/node:18.0.0
-    environment:
-      ESLINT_CONFIG: |
-        {
-          "env": {
-            "browser": true,
-            "es6": true,
-            "node": true
-          },
-          "extends": [
-            "eslint:recommended",
-            "plugin:@typescript-eslint/eslint-recommended",
-            "plugin:@typescript-eslint/recommended"
-          ],
-          "globals": {
-            "Atomics": "readonly",
-            "SharedArrayBuffer": "readonly"
-          },
-          "parser": "@typescript-eslint/parser",
-          "parserOptions": {
-            "ecmaVersion": 2018,
-            "sourceType": "module"
-          },
-          "plugins": [
-            "@typescript-eslint"
-          ],
-          "rules": {}
-        }
     steps:
       - checkout
       - run:
           name: Install Dependencies
-          command: npm install eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin
+          command: |
+            npm install eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin
 
       - run:
           name: Configure ESLint
-          command: echo "$ESLINT_CONFIG" > .eslintrc.json
-
+          command: echo '${ESLINT_CONFIG}' > .eslintrc.json
+          
       - run:
           name: Run ESLint
           command: npx eslint .
@@ -49,9 +23,11 @@ jobs:
           name: Check linting errors
           command: npx eslint . --quiet || exit 1  # Exit with an error if linting fails
 
+
       - add_ssh_keys:
           fingerprints:
             - "SHA256:egfROIFK6jLx9kDvL5uWa6iaRqW6knAIf+OHMD9tDmI"
+     
 
   build-docker:
     machine: true
@@ -85,13 +61,13 @@ jobs:
             docker build -t udagram-reverseproxy ./udagram-reverseproxy
             docker tag udagram-reverseproxy pearlicia/udagram-reverseproxy:v2
 
-            echo "-------- All images successfully built ----------"
+            echo "-------- All images succesfully built----------"
 
-            echo " ------- login to dockerhub --------"
+            echo " ------- login to dockerhub--------"
 
             docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 
-            echo "-------------- Push all images to dockerhub -------"
+            echo "-------------- Push all images to dockerhub-------"
 
             docker push pearlicia/udagram-api-feed:v2
             docker push pearlicia/udagram-api-user:v2
@@ -99,9 +75,37 @@ jobs:
             docker push pearlicia/udagram-reverseproxy:v2
 
 workflows:
-  version: 2
   default:
     jobs:
-      - linting
+      - linting:
+          environment:
+            ESLINT_CONFIG: |
+              {
+                "env": {
+                    "browser": true,
+                    "es6": true,
+                    "node": true
+                },
+                "extends": [
+                    "eslint:recommended",
+                    "plugin:@typescript-eslint/eslint-recommended",
+                    "plugin:@typescript-eslint/recommended"
+                ],
+                "globals": {
+                    "Atomics": "readonly",
+                    "SharedArrayBuffer": "readonly"
+                },
+                "parser": "@typescript-eslint/parser",
+                "parserOptions": {
+                    "ecmaVersion": 2018,
+                    "sourceType": "module"
+                },
+                "plugins": [
+                    "@typescript-eslint"
+                ],
+                "rules": {
+                }
+              }
       - build-docker:
           requires: [linting]
+
