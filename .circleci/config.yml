@@ -8,10 +8,27 @@ jobs:
       - checkout
       - run:
           name: Install Dependencies
-          command: npm install eslint 
+          command: |
+            npm install eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin
+
+      - run:
+          name: Configure ESLint
+          command: echo '${ESLINT_CONFIG}' > .eslintrc.json
+          
+      - run:
+          name: Run ESLint
+          command: npx eslint .
+
+      - run:
+          name: Check linting errors
+          command: npx eslint . --quiet || exit 1  # Exit with an error if linting fails
+
+
       - add_ssh_keys:
           fingerprints:
             - "SHA256:egfROIFK6jLx9kDvL5uWa6iaRqW6knAIf+OHMD9tDmI"
+     
+
   build-docker:
     machine: true
     steps:
@@ -60,7 +77,35 @@ jobs:
 workflows:
   default:
     jobs:
-      - linting
+      - linting:
+          environment:
+            ESLINT_CONFIG: |
+              {
+                "env": {
+                    "browser": true,
+                    "es6": true,
+                    "node": true
+                },
+                "extends": [
+                    "eslint:recommended",
+                    "plugin:@typescript-eslint/eslint-recommended",
+                    "plugin:@typescript-eslint/recommended"
+                ],
+                "globals": {
+                    "Atomics": "readonly",
+                    "SharedArrayBuffer": "readonly"
+                },
+                "parser": "@typescript-eslint/parser",
+                "parserOptions": {
+                    "ecmaVersion": 2018,
+                    "sourceType": "module"
+                },
+                "plugins": [
+                    "@typescript-eslint"
+                ],
+                "rules": {
+                }
+              }
       - build-docker:
           requires: [linting]
 
