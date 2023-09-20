@@ -41,13 +41,13 @@ jobs:
           name: Configure ESLint
           command: echo "$ESLINT_CONFIG" > .eslintrc.json
 
-      # - run:
-      #     name: Run ESLint
-      #     command: npx eslint .
+      - run:
+          name: Run ESLint
+          command: npx eslint .
 
-      # - run:
-      #     name: Check linting errors
-      #     command: npx eslint . --quiet
+      - run:
+          name: Check linting errors
+          command: npx eslint . --quiet
 
           # command: npx eslint . --quiet || exit 1  # Exit with an error if linting fails
 
