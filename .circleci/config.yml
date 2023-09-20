@@ -1,11 +1,14 @@
 version: 2.1
 
 jobs:
-  lint-app:
+  linting:
     docker:
-      - image: circleci/node:13.8.0
+      - image: cimg/node:18.0.0
     steps:
       - checkout
+      - run:
+          name: Install Dependencies
+          command: npm install eslint 
       - add_ssh_keys:
           fingerprints:
             - "SHA256:egfROIFK6jLx9kDvL5uWa6iaRqW6knAIf+OHMD9tDmI"
@@ -57,7 +60,7 @@ jobs:
 workflows:
   default:
     jobs:
-      - lint-app
+      - linting
       - build-docker:
-          requires: [lint-app]
+          requires: [linting]
 
