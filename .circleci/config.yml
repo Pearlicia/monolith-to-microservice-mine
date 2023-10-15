@@ -53,7 +53,7 @@ jobs:
 
       - add_ssh_keys:
           fingerprints:
-            - "SHA256:egfROIFK6jLx9kDvL5uWa6iaRqW6knAIf+OHMD9tDmI"
+            - "SHA256:egfRRqW6knAIf+OHMD9tDmI"
 
   build-docker:
     machine: true
@@ -61,7 +61,7 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints:
-            - "SHA256:egfROIFK6jLx9kDvL5uWa6iaRqW6knAIf+OHMD9tDmI"
+            - "SHA256:egfROIuWa6iaRqW6knAIf+OHMD9tDmI"
       - run:
           name: Build docker images for each microservices
           command: |
